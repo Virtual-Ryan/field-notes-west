@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ryan Carlson — Journal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:  #0a0a0a;
+      --white:  #ffffff;
+      --mid:    #888888;
+      --line:   #d4d4d2;
+      --accent: #c94818;
+      --font: 'Space Grotesk', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--white);
+      color: var(--black);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── NAV ─────────────────────────────────────────────── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 48px;
+      border-bottom: 1px solid var(--black);
+      position: sticky;
+      top: 0;
+      background: var(--white);
+      z-index: 300;
+    }
+    .nav-brand {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: .2em; text-transform: uppercase;
+      text-decoration: none; color: var(--black);
+    }
+    .nav-links { display: flex; gap: 36px; list-style: none; }
+    .nav-links a {
+      font-size: 11px; font-weight: 500;
+      letter-spacing: .14em; text-transform: uppercase;
+      text-decoration: none; color: var(--black);
+      transition: opacity .15s;
+    }
+    .nav-links a:hover { opacity: .4; }
+    .nav-meta {
+      font-size: 11px; letter-spacing: .1em;
+      color: var(--mid); text-transform: uppercase;
+    }
+
+    /* ── MASTHEAD ────────────────────────────────────────── */
+    .masthead { border-bottom: 1px solid var(--black); overflow: hidden; padding: 0; }
+    .masthead h1 {
+      font-size: clamp(108px, 23vw, 300px);
+      font-weight: 700; line-height: 0.83;
+      letter-spacing: -0.03em; text-transform: uppercase;
+      padding: 18px 48px 14px 40px;
+    }
+
+    /* ── TICKER ──────────────────────────────────────────── */
+    .ticker {
+      background: var(--black); color: var(--white);
+      padding: 9px 0; overflow: hidden;
+      border-bottom: 1px solid var(--black);
+    }
+    .ticker-track {
+      display: flex; white-space: nowrap;
+      animation: marquee 40s linear infinite;
+    }
+    .ticker-track span {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: .2em; text-transform: uppercase;
+      padding-right: 60px; flex-shrink: 0;
+    }
+    @keyframes marquee {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ── FEATURED ────────────────────────────────────────── */
+    .featured { border-bottom: 2px solid var(--black); }
+    .featured-split {
+      display: grid; grid-template-columns: 55% 45%;
+      min-height: 260px; border-bottom: 1px solid var(--black);
+    }
+    .featured-hl {
+      padding: 56px 48px 56px 40px;
+      border-right: 1px solid var(--black);
+      display: flex; align-items: flex-end;
+    }
+    .featured-hl h2 {
+      font-size: clamp(46px, 6.5vw, 92px);
+      font-weight: 700; line-height: 0.96;
+      letter-spacing: -0.03em; text-transform: uppercase;
+      cursor: pointer; transition: opacity .2s;
+    }
+    .featured-hl h2:hover { opacity: .6; }
+    .featured-aside {
+      padding: 56px 48px;
+      display: flex; flex-direction: column;
+      justify-content: space-between;
+    }
+    .meta-block { display: flex; flex-direction: column; gap: 5px; margin-bottom: 28px; }
+    .meta-row {
+      display: flex; gap: 12px;
+      font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    }
+    .meta-row .lbl { font-weight: 700; }
+    .meta-row .val { color: var(--mid); }
+    .featured-excerpt {
+      font-size: 15px; line-height: 1.75; color: #3a3a3a;
+      max-width: 360px; margin-bottom: 32px;
+    }
+    .featured-actions { display: flex; align-items: center; gap: 14px; }
+    .pill {
+      display: inline-flex; align-items: center;
+      border: 1.5px solid var(--black);
+      font-family: var(--font); font-size: 10px;
+      font-weight: 700; letter-spacing: .14em;
+      text-transform: uppercase; padding: 7px 18px;
+      border-radius: 999px; cursor: pointer;
+      background: transparent; color: var(--black);
+      transition: background .15s, color .15s;
+      text-decoration: none;
+    }
+    .pill:hover, .pill.filled { background: var(--black); color: var(--white); }
+    .hero-wrap { position: relative; overflow: hidden; cursor: pointer; }
+    .hero-img {
+      width: 100%; height: 740px; object-fit: cover;
+      display: block; filter: grayscale(100%) contrast(1.06);
+      transition: transform .6s ease;
+    }
+    .hero-wrap:hover .hero-img { transform: scale(1.02); }
+    .hero-vert {
+      position: absolute; right: 44px; bottom: 44px;
+      writing-mode: vertical-rl; text-orientation: mixed;
+      font-size: 10px; font-weight: 700; letter-spacing: .24em;
+      text-transform: uppercase; color: rgba(255,255,255,.5);
+      user-select: none; pointer-events: none;
+    }
+
+    /* ── INFO STRIP ──────────────────────────────────────── */
+    .info-strip {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      border-bottom: 1px solid var(--black);
+    }
+    .info-cell {
+      padding: 13px 40px; font-size: 10px;
+      font-weight: 700; letter-spacing: .16em;
+      text-transform: uppercase; color: var(--mid);
+      border-right: 1px solid var(--black);
+    }
+    .info-cell:last-child { border-right: none; }
+
+    /* ── CATEGORIES BAR ──────────────────────────────────── */
+    .cat-bar {
+      display: flex; align-items: center;
+      gap: 8px; padding: 16px 40px;
+      border-bottom: 1px solid var(--black);
+    }
+    .cat-label {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: .2em; text-transform: uppercase;
+      color: var(--mid); margin-right: 10px;
+    }
+    .cat-pill {
+      background: transparent; border: 1.5px solid var(--black);
+      font-family: var(--font); font-size: 10px; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase;
+      padding: 5px 14px; border-radius: 999px;
+      cursor: pointer; transition: background .15s, color .15s;
+    }
+    .cat-pill:hover, .cat-pill.active { background: var(--black); color: var(--white); }
+
+    /* ── SECTION HEAD ────────────────────────────────────── */
+    .section-head {
+      display: flex; align-items: center;
+      justify-content: space-between; padding: 20px 40px 0;
+    }
+    .section-label {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: .22em; text-transform: uppercase; color: var(--mid);
+    }
+
+    /* ── ARTICLE GRID ────────────────────────────────────── */
+    .grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      margin-top: 20px; border-top: 1px solid var(--black);
+    }
+    .card {
+      display: flex; flex-direction: column;
+      border-right: 1px solid var(--black);
+      border-bottom: 1px solid var(--black);
+      transition: opacity .25s;
+    }
+    .card.hidden { display: none; }
+    .card:nth-child(3n) { border-right: none; }
+    .card-head {
+      display: flex; align-items: center;
+      justify-content: space-between; padding: 10px 24px;
+      border-bottom: 1px solid var(--line); flex-shrink: 0;
+    }
+    .card-date { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--mid); }
+    .card-tag {
+      font-size: 9px; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase;
+      border: 1px solid var(--black); border-radius: 999px; padding: 3px 10px;
+    }
+    .card-img-wrap {
+      overflow: hidden; height: 265px;
+      border-bottom: 1px solid var(--black);
+      flex-shrink: 0; cursor: pointer;
+    }
+    .card-img-wrap img {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block; filter: grayscale(100%) contrast(1.04);
+      transition: transform .5s ease;
+    }
+    .card:hover .card-img-wrap img { transform: scale(1.04); }
+    .card-img-wrap.color img { filter: none; }
+    .card-body { padding: 20px 24px 0; flex: 1; }
+    .card-title {
+      font-size: 19px; font-weight: 700;
+      line-height: 1.08; letter-spacing: -.01em;
+      text-transform: uppercase; margin-bottom: 10px;
+      cursor: pointer; transition: opacity .2s;
+    }
+    .card-title:hover { opacity: .5; }
+    .card-excerpt { font-size: 12.5px; line-height: 1.65; color: #4a4a4a; }
+    .card-foot {
+      display: flex; align-items: center;
+      justify-content: space-between; padding: 14px 24px 20px;
+      margin-top: 14px; border-top: 1px solid var(--line); flex-shrink: 0;
+    }
+    .card-byline { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--mid); }
+    .card-byline strong { color: var(--black); font-weight: 700; }
+    .read-link {
+      font-size: 10px; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; text-decoration: none; color: var(--black);
+      cursor: pointer; border: none; background: none;
+      font-family: var(--font); transition: opacity .2s;
+    }
+    .read-link:hover { opacity: .5; }
+
+    /* Wide card */
+    .card.wide {
+      grid-column: span 2;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      grid-template-rows: auto 1fr;
+      border-right: 1px solid var(--black);
+    }
+    .card.wide:nth-child(3n) { border-right: 1px solid var(--black); }
+    .card.wide .card-head { grid-column: 1 / -1; }
+    .card.wide .card-img-wrap {
+      grid-column: 1; grid-row: 2;
+      height: 100%; min-height: 320px;
+      border-bottom: none; border-right: 1px solid var(--black);
+    }
+    .card.wide .card-content {
+      grid-column: 2; grid-row: 2;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .card.wide .card-body { padding: 36px 40px 0; }
+    .card.wide .card-title { font-size: 34px; line-height: 1.0; margin-bottom: 18px; }
+    .card.wide .card-foot { padding: 14px 40px 28px; }
+
+    /* ── ORANGE ACCENT BLOCK ─────────────────────────────── */
+    .accent-block {
+      display: grid; grid-template-columns: 1fr 1fr;
+      border-top: 1px solid var(--black);
+      border-bottom: 1px solid var(--black);
+    }
+    .accent-left {
+      background: var(--accent);
+      padding: 80px 48px 80px 40px;
+      border-right: 1px solid rgba(0,0,0,.15);
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .accent-eyebrow {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: .22em; text-transform: uppercase;
+      color: rgba(255,255,255,.65);
+    }
+    .accent-title {
+      font-size: clamp(48px, 6vw, 80px);
+      font-weight: 700; line-height: 0.96;
+      letter-spacing: -.03em; text-transform: uppercase;
+      color: var(--white); margin: 20px 0 32px;
+    }
+    .accent-btn {
+      display: inline-flex; align-items: center;
+      border: 1.5px solid rgba(255,255,255,.65);
+      font-family: var(--font); font-size: 10px;
+      font-weight: 700; letter-spacing: .16em;
+      text-transform: uppercase; padding: 8px 20px;
+      border-radius: 999px; color: var(--white);
+      background: transparent; cursor: pointer;
+      align-self: flex-start; transition: background .15s;
+      text-decoration: none;
+    }
+    .accent-btn:hover { background: rgba(255,255,255,.15); }
+    .accent-right { overflow: hidden; position: relative; }
+    .accent-right img {
+      width: 100%; height: 100%; min-height: 420px;
+      object-fit: cover; display: block;
+      filter: grayscale(100%) contrast(1.08);
+    }
+    .accent-vert {
+      position: absolute; right: 24px; top: 50%;
+      transform: translateY(-50%) rotate(90deg);
+      font-size: 10px; font-weight: 700; letter-spacing: .24em;
+      text-transform: uppercase; color: rgba(255,255,255,.4);
+      white-space: nowrap; pointer-events: none;
+    }
+
+    /* ── HORIZONTAL LIST ─────────────────────────────────── */
+    .list-section { border-bottom: 1px solid var(--black); }
+    .list-head {
+      padding: 16px 40px; border-bottom: 1px solid var(--black);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .view-all {
+      font-size: 10px; font-weight: 700; letter-spacing: .14em;
+      text-transform: uppercase; text-decoration: none;
+      color: var(--black); border-bottom: 1px solid var(--black);
+      padding-bottom: 2px; transition: opacity .15s;
+    }
+    .view-all:hover { opacity: .4; }
+    .list-item {
+      display: grid; grid-template-columns: 128px 1fr;
+      border-bottom: 1px solid var(--black); cursor: pointer;
+      transition: background .15s;
+    }
+    .list-item:last-child { border-bottom: none; }
+    .list-item:hover { background: #fafaf8; }
+    .list-thumb { overflow: hidden; border-right: 1px solid var(--black); }
+    .list-thumb img {
+      width: 100%; height: 100%; min-height: 120px;
+      object-fit: cover; display: block; filter: grayscale(100%);
+      transition: transform .4s ease;
+    }
+    .list-item:hover .list-thumb img { transform: scale(1.05); }
+    .list-body {
+      padding: 20px 48px;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .list-tag {
+      font-size: 10px; font-weight: 700; letter-spacing: .16em;
+      text-transform: uppercase; color: var(--mid); margin-bottom: 8px;
+    }
+    .list-title {
+      font-size: 17px; font-weight: 700; letter-spacing: -.01em;
+      text-transform: uppercase; line-height: 1.08; margin-bottom: 8px;
+    }
+    .list-excerpt { font-size: 12px; line-height: 1.65; color: #4a4a4a; }
+    .list-meta {
+      display: flex; gap: 24px; margin-top: 12px;
+      font-size: 10px; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--mid);
+    }
+    .list-meta strong { color: var(--black); font-weight: 700; }
+
+    /* ── ABOUT SECTION ───────────────────────────────────── */
+    .about-section {
+      display: grid; grid-template-columns: 1fr 1fr;
+      border-top: 2px solid var(--black);
+    }
+    .about-left {
+      padding: 88px 48px 88px 40px;
+      border-right: 1px solid var(--black);
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .about-name {
+      font-size: clamp(56px, 9vw, 120px);
+      font-weight: 700; line-height: 0.90;
+      letter-spacing: -0.03em; text-transform: uppercase;
+    }
+    .about-role {
+      font-size: 11px; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--mid); margin-top: 28px;
+    }
+    .about-right {
+      padding: 88px 48px;
+      display: flex; flex-direction: column; gap: 36px;
+    }
+    .about-photo-row { display: flex; align-items: flex-start; gap: 32px; }
+    .about-img {
+      width: 136px; height: 136px; object-fit: cover;
+      object-position: center 18%; filter: grayscale(100%);
+      flex-shrink: 0; display: block;
+    }
+    .about-bio-block { display: flex; flex-direction: column; gap: 16px; }
+    .about-bio {
+      font-size: 15px; line-height: 1.78; color: #3a3a3a;
+    }
+    .about-bio p + p { margin-top: 0; }
+    .about-links { display: flex; gap: 28px; flex-wrap: wrap; }
+    .about-link {
+      font-size: 11px; font-weight: 700; letter-spacing: .16em;
+      text-transform: uppercase; text-decoration: none;
+      color: var(--black); border-bottom: 1.5px solid var(--black);
+      padding-bottom: 3px; transition: opacity .15s;
+    }
+    .about-link:hover { opacity: .4; }
+
+    /* ── ARCHIVE CTA ─────────────────────────────────────── */
+    .archive-cta {
+      background: var(--black); color: var(--white);
+      padding: 104px 48px 104px 40px;
+      display: flex; align-items: flex-end;
+      justify-content: space-between; gap: 48px;
+    }
+    .archive-head {
+      font-size: clamp(56px, 10vw, 140px);
+      font-weight: 700; line-height: 0.90;
+      letter-spacing: -0.03em; text-transform: uppercase;
+    }
+    .archive-right { text-align: right; flex-shrink: 0; }
+    .archive-sub {
+      font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+      color: rgba(255,255,255,.4); margin-bottom: 20px;
+    }
+    .archive-pill {
+      display: inline-flex; align-items: center;
+      border: 1.5px solid rgba(255,255,255,.55);
+      font-family: var(--font); font-size: 10px;
+      font-weight: 700; letter-spacing: .16em;
+      text-transform: uppercase; padding: 10px 24px;
+      border-radius: 999px; color: var(--white);
+      background: transparent; cursor: pointer;
+      transition: background .15s; text-decoration: none;
+    }
+    .archive-pill:hover { background: rgba(255,255,255,.1); }
+
+    /* ── FOOTER ──────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--black); padding: 22px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-brand {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: .2em; text-transform: uppercase;
+      text-decoration: none; color: var(--black);
+    }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-link {
+      font-size: 11px; letter-spacing: .1em;
+      text-transform: uppercase; text-decoration: none;
+      color: var(--mid); transition: color .15s;
+    }
+    .footer-link:hover { color: var(--black); }
+    .footer-copy { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--mid); }
+
+    /* ════════════════════════════════════════════════════════
+       ARTICLE MODAL
+    ════════════════════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(10,10,10,.97);
+      display: flex; opacity: 0; pointer-events: none;
+      transition: opacity .3s ease;
+      overflow: hidden;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal-close {
+      position: fixed; top: 24px; right: 32px;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: .2em; text-transform: uppercase;
+      color: rgba(255,255,255,.5); cursor: pointer;
+      background: none; border: none; font-family: var(--font);
+      z-index: 1001; transition: color .15s;
+    }
+    .modal-close:hover { color: var(--white); }
+
+    .modal-inner {
+      display: grid; grid-template-columns: 60% 40%;
+      width: 100%; height: 100%;
+      transform: translateY(20px);
+      transition: transform .35s ease;
+    }
+    .modal-overlay.open .modal-inner { transform: translateY(0); }
+
+    .modal-image-pane {
+      position: relative; overflow: hidden;
+      border-right: 1px solid rgba(255,255,255,.1);
+    }
+    .modal-image-pane img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .modal-image-pane img.bw { filter: grayscale(100%) contrast(1.05); }
+
+    .modal-story-pane {
+      padding: 72px 56px; overflow-y: auto;
+      display: flex; flex-direction: column;
+      color: var(--white);
+    }
+
+    .modal-tag {
+      font-size: 10px; font-weight: 700; letter-spacing: .18em;
+      text-transform: uppercase; color: rgba(255,255,255,.4);
+      margin-bottom: 20px;
+    }
+    .modal-title {
+      font-size: clamp(32px, 4vw, 56px);
+      font-weight: 700; line-height: 0.96;
+      letter-spacing: -.02em; text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .modal-meta {
+      display: flex; flex-direction: column; gap: 5px;
+      margin-bottom: 40px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+    .modal-meta-row {
+      display: flex; gap: 10px;
+      font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    }
+    .modal-meta-row .lbl { font-weight: 700; color: rgba(255,255,255,.9); }
+    .modal-meta-row .val { color: rgba(255,255,255,.4); }
+    .modal-body {
+      flex: 1; display: flex; flex-direction: column; gap: 20px;
+    }
+    .modal-body p {
+      font-size: 15px; line-height: 1.8;
+      color: rgba(255,255,255,.72);
+    }
+    .modal-body p.lead {
+      font-size: 17px; font-weight: 500;
+      color: rgba(255,255,255,.9); line-height: 1.65;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ──────────────────────────────────────────────────── -->
+<nav>
+  <a href="#top" class="nav-brand">Ryan Carlson</a>
+  <ul class="nav-links">
+    <li><a href="#journal">Journal</a></li>
+    <li><a href="#photos">Photos</a></li>
+    <li><a href="#series">Series</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+  <div class="nav-meta">Vol. 01 — 2026</div>
+</nav>
+
+<!-- ── MASTHEAD ──────────────────────────────────────────────── -->
+<div class="masthead" id="top">
+  <h1>Journal.</h1>
+</div>
+
+<!-- ── TICKER ────────────────────────────────────────────────── -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span>News Ticker+++ ✦ ✦ ✦ &nbsp; New series: Life on the Road &nbsp; ✦ &nbsp; Sedona shoot now online &nbsp; ✦ &nbsp; Van life documentation &nbsp; ✦ &nbsp; Portraits in low light &nbsp; ✦ &nbsp; Somewhere in the Southwest &nbsp; ✦ &nbsp; Desert highways at dusk &nbsp; ✦ &nbsp; All photographs by Ryan Carlson &nbsp; ✦ &nbsp; &nbsp;</span>
+    <span>News Ticker+++ ✦ ✦ ✦ &nbsp; New series: Life on the Road &nbsp; ✦ &nbsp; Sedona shoot now online &nbsp; ✦ &nbsp; Van life documentation &nbsp; ✦ &nbsp; Portraits in low light &nbsp; ✦ &nbsp; Somewhere in the Southwest &nbsp; ✦ &nbsp; Desert highways at dusk &nbsp; ✦ &nbsp; All photographs by Ryan Carlson &nbsp; ✦ &nbsp; &nbsp;</span>
+  </div>
+</div>
+
+<!-- ── FEATURED ───────────────────────────────────────────────── -->
+<div class="featured" id="featured">
+  <div class="featured-split">
+    <div class="featured-hl">
+      <h2 onclick="openModal('midnight')">Somewhere<br>After<br>Midnight</h2>
+    </div>
+    <div class="featured-aside">
+      <div>
+        <div class="meta-block">
+          <div class="meta-row"><span class="lbl">Text:</span><span class="val">Ryan Carlson</span></div>
+          <div class="meta-row"><span class="lbl">Date:</span><span class="val">30. March 2026</span></div>
+          <div class="meta-row"><span class="lbl">Read:</span><span class="val">4 min</span></div>
+        </div>
+        <p class="featured-excerpt">A van pulled off an unnamed dirt road. Stars overhead. The kind of quiet that only exists when you are far enough from a city that the hum goes away completely. This is what we drove toward.</p>
+      </div>
+      <div class="featured-actions">
+        <button class="pill filled" onclick="openModal('midnight')">Van Life</button>
+        <button class="pill" onclick="openModal('midnight')">View Story →</button>
+      </div>
+    </div>
+  </div>
+  <div class="hero-wrap" onclick="openModal('midnight')">
+    <img class="hero-img" src="Photos I took/DSCF4422 1.jpg" alt="Van parked on a dirt road under a star-filled sky">
+    <div class="hero-vert">Life on the Road — Vol. 01 — Ryan Carlson — 2026</div>
+  </div>
+</div>
+
+<!-- ── INFO STRIP ─────────────────────────────────────────────── -->
+<div class="info-strip">
+  <div class="info-cell">Photography: Ryan Carlson</div>
+  <div class="info-cell">Location: Southwest USA</div>
+  <div class="info-cell">Camera: Fujifilm X-Series</div>
+  <div class="info-cell">Issue: 01 — March 2026</div>
+</div>
+
+<!-- ── CATEGORIES ─────────────────────────────────────────────── -->
+<div class="cat-bar" id="photos">
+  <span class="cat-label">Categories</span>
+  <button class="cat-pill active" data-filter="all">All</button>
+  <button class="cat-pill" data-filter="van-life">Van Life</button>
+  <button class="cat-pill" data-filter="portraits">Portraits</button>
+  <button class="cat-pill" data-filter="landscapes">Landscapes</button>
+  <button class="cat-pill" data-filter="the-dog">The Dog</button>
+</div>
+
+<!-- ── SECTION HEAD ───────────────────────────────────────────── -->
+<div class="section-head" id="journal">
+  <span class="section-label">All Stories</span>
+</div>
+
+<!-- ── ARTICLE GRID ───────────────────────────────────────────── -->
+<div class="grid">
+
+  <!-- WIDE: Red Rock Evening -->
+  <div class="card wide" data-cat="landscapes">
+    <div class="card-head">
+      <span class="card-date">28. March 2026</span>
+      <span class="card-tag">Landscapes</span>
+    </div>
+    <div class="card-img-wrap color" onclick="openModal('sedona-couple')">
+      <img src="Photos I took/DSCF4700.jpg" alt="Couple at sunset in Sedona">
+    </div>
+    <div class="card-content">
+      <div class="card-body">
+        <h3 class="card-title" onclick="openModal('sedona-couple')">Red Rock<br>Evening</h3>
+        <p class="card-excerpt">The light in Sedona does something to time. It bends it, flattens it, makes late afternoon feel like it could last for days. We stood at a fence post and didn't want to leave.</p>
+      </div>
+      <div class="card-foot">
+        <span class="card-byline"><strong>Text:</strong> Ryan Carlson — <strong>Duration:</strong> 3m</span>
+        <button class="read-link" onclick="openModal('sedona-couple')">Read More →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card: The Morning Watch -->
+  <div class="card" data-cat="the-dog">
+    <div class="card-head">
+      <span class="card-date">27. March 2026</span>
+      <span class="card-tag">The Dog</span>
+    </div>
+    <div class="card-img-wrap" onclick="openModal('morning-watch')">
+      <img src="Photos I took/DSCF4402 1.jpg" alt="Pomeranian at the window">
+    </div>
+    <div class="card-body">
+      <h3 class="card-title" onclick="openModal('morning-watch')">The Morning Watch</h3>
+      <p class="card-excerpt">She sits at the window every morning without fail. Watching. Alert. Something out there always demands her full attention.</p>
+    </div>
+    <div class="card-foot">
+      <span class="card-byline"><strong>Text:</strong> Ryan Carlson — <strong>Duration:</strong> 2m</span>
+      <button class="read-link" onclick="openModal('morning-watch')">Read More →</button>
+    </div>
+  </div>
+
+  <!-- Card: Home Is Where You Park It -->
+  <div class="card" data-cat="van-life">
+    <div class="card-head">
+      <span class="card-date">26. March 2026</span>
+      <span class="card-tag">Van Life</span>
+    </div>
+    <div class="card-img-wrap" onclick="openModal('home-van')">
+      <img src="Photos I took/DSCF4532 1.jpg" alt="Couple in van doorway at night">
+    </div>
+    <div class="card-body">
+      <h3 class="card-title" onclick="openModal('home-van')">Home Is Where You Park It</h3>
+      <p class="card-excerpt">The doorway of a van becomes a frame. Everything behind you is the home you built. Everything ahead is the next place you haven't been yet.</p>
+    </div>
+    <div class="card-foot">
+      <span class="card-byline"><strong>Text:</strong> Ryan Carlson — <strong>Duration:</strong> 4m</span>
+      <button class="read-link" onclick="openModal('home-van')">Read More →</button>
+    </div>
+  </div>
+
+  <!-- Card: Close -->
+  <div class="card" data-cat="portraits">
+    <div class="card-head">
+      <span class="card-date">25. March 2026</span>
+      <span class="card-tag">Portraits</span>
+    </div>
+    <div class="card-img-wrap" onclick="openModal('close')">
+      <img src="Photos I took/DSCF4604 1.jpg" alt="Intimate B&W portrait">
+    </div>
+    <div class="card-body">
+      <h3 class="card-title" onclick="openModal('close')">Close</h3>
+      <p class="card-excerpt">The most honest photographs happen when both people forget the camera is there. That's exactly what this is.</p>
+    </div>
+    <div class="card-foot">
+      <span class="card-byline"><strong>Text:</strong> Ryan Carlson — <strong>Duration:</strong> 2m</span>
+      <button class="read-link" onclick="openModal('close')">Read More →</button>
+    </div>
+  </div>
+
+  <!-- Card: Small Things -->
+  <div class="card" data-cat="the-dog">
+    <div class="card-head">
+      <span class="card-date">24. March 2026</span>
+      <span class="card-tag">The Dog</span>
+    </div>
+    <div class="card-img-wrap" onclick="openModal('small-things')">
+      <img src="Photos I took/DSCF4456 1.jpg" alt="Pomeranian on a leash in the grass">
+    </div>
+    <div class="card-body">
+      <h3 class="card-title" onclick="openModal('small-things')">Small Things</h3>
+      <p class="card-excerpt">A ten-pound dog who treats every patch of grass like it's a new country. She's not wrong. It is.</p>
+    </div>
+    <div class="card-foot">
+      <span class="card-byline"><strong>Text:</strong> Ryan Carlson — <strong>Duration:</strong> 2m</span>
+      <button class="read-link" onclick="openModal('small-things')">Read More →</button>
+    </div>
+  </div>
+
+  <!-- Card: Sedona First Light -->
+  <div class="card" data-cat="landscapes">
+    <div class="card-head">
+      <span class="card-date">23. March 2026</span>
+      <span class="card-tag">Landscapes</span>
+    </div>
+    <div class="card-img-wrap color" onclick="openModal('sedona-rock')">
+      <img src="Photos I took/DSCF4710.jpg" alt="Sedona red rock at golden hour">
+    </div>
+    <div class="card-body">
+      <h3 class="card-title" onclick="openModal('sedona-rock')">Sedona, First Light</h3>
+      <p class="card-excerpt">The red rock catches the last warmth of the day and holds it, glowing. You understand why people treat this place as sacred.</p>
+    </div>
+    <div class="card-foot">
+      <span class="card-byline"><strong>Text:</strong> Ryan Carlson — <strong>Duration:</strong> 3m</span>
+      <button class="read-link" onclick="openModal('sedona-rock')">Read More →</button>
+    </div>
+  </div>
+
+</div><!-- /grid -->
+
+<!-- ── ORANGE ACCENT BLOCK ───────────────────────────────────── -->
+<div class="accent-block" id="series">
+  <div class="accent-left">
+    <span class="accent-eyebrow">Featured Series — Van Life</span>
+    <div>
+      <h2 class="accent-title">Life<br>On<br>The<br>Road</h2>
+      <a href="#journal" class="accent-btn">View Series →</a>
+    </div>
+  </div>
+  <div class="accent-right">
+    <img src="Photos I took/DSCF4477 1.jpg" alt="The van in a parking lot">
+    <div class="accent-vert">Southwest USA — 2026 — Ryan Carlson</div>
+  </div>
+</div>
+
+<!-- ── HORIZONTAL LIST ────────────────────────────────────────── -->
+<div class="list-section">
+  <div class="list-head">
+    <span class="section-label">More Stories</span>
+    <a href="#journal" class="view-all">View All →</a>
+  </div>
+
+  <div class="list-item" onclick="openModal('three-in-a-bed')">
+    <div class="list-thumb">
+      <img src="Photos I took/DSCF4411 1.jpg" alt="Dog in van bed">
+    </div>
+    <div class="list-body">
+      <div>
+        <div class="list-tag">The Dog</div>
+        <h4 class="list-title">Three in a Bed</h4>
+        <p class="list-excerpt">The van bed is not large. We share it with someone who weighs eleven pounds and takes up most of it. Nobody complains.</p>
+      </div>
+      <div class="list-meta">
+        <span><strong>Text:</strong> Ryan Carlson</span>
+        <span><strong>Date:</strong> 22. March 2026</span>
+        <span><strong>Duration:</strong> 2m</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="list-item" onclick="openModal('self-assigned')">
+    <div class="list-thumb">
+      <img src="Photos I took/DSCF4725.jpg" alt="Ryan portrait in Sedona">
+    </div>
+    <div class="list-body">
+      <div>
+        <div class="list-tag">Portraits</div>
+        <h4 class="list-title">Self-Assigned</h4>
+        <p class="list-excerpt">The photographer, photographed. Somewhere outside Sedona. The rocks don't care who you are and that is exactly right.</p>
+      </div>
+      <div class="list-meta">
+        <span><strong>Text:</strong> Ryan Carlson</span>
+        <span><strong>Date:</strong> 20. March 2026</span>
+        <span><strong>Duration:</strong> 2m</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="list-item" onclick="openModal('transit')">
+    <div class="list-thumb">
+      <img src="Photos I took/DSCF4477 1.jpg" alt="Van in a parking lot">
+    </div>
+    <div class="list-body">
+      <div>
+        <div class="list-tag">Van Life</div>
+        <h4 class="list-title">Transit</h4>
+        <p class="list-excerpt">Between destinations, the van sits in parking lots. Unremarkable to everyone passing by. Everything to us.</p>
+      </div>
+      <div class="list-meta">
+        <span><strong>Text:</strong> Ryan Carlson</span>
+        <span><strong>Date:</strong> 18. March 2026</span>
+        <span><strong>Duration:</strong> 3m</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ABOUT / AUTHOR ─────────────────────────────────────────── -->
+<div class="about-section" id="about">
+  <div class="about-left">
+    <div>
+      <div class="about-name">Ryan<br>Carlson</div>
+      <div class="about-role">Photographer — Writer — Van Dweller</div>
+    </div>
+  </div>
+  <div class="about-right">
+    <div class="about-photo-row">
+      <img class="about-img" src="Author.jpg" alt="Ryan Carlson">
+      <div class="about-bio-block">
+        <p class="about-bio">I live in a van with my partner and our Pomeranian. We left a fixed address in 2024 and haven't had a reason to go back. The Southwest is where we've spent most of our time — Sedona, New Mexico, the Texas hill country — anywhere the light does something interesting and the parking is free.</p>
+        <p class="about-bio">I shoot on a Fujifilm X-series, almost always in black and white. The camera is how I pay attention. It forces me to slow down and actually look at what's in front of me, which is harder than it sounds when everything is moving.</p>
+        <p class="about-bio">This journal is a record of that. Not a travel blog. Not an influencer account. Just photographs and the small stories that go with them.</p>
+      </div>
+    </div>
+    <div class="about-links">
+      <a href="https://instagram.com" target="_blank" class="about-link">Instagram ↗</a>
+      <a href="mailto:americanized@gmail.com" class="about-link">Email</a>
+      <a href="#top" class="about-link">Back to Top ↑</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── ARCHIVE CTA ─────────────────────────────────────────────── -->
+<div class="archive-cta">
+  <div class="archive-head">View<br>The<br>Archive</div>
+  <div class="archive-right">
+    <div class="archive-sub">All photographs — Vol. 01</div>
+    <a href="#journal" class="archive-pill">Browse All Photos →</a>
+  </div>
+</div>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────── -->
+<footer>
+  <a href="#top" class="footer-brand">Ryan Carlson — Journal</a>
+  <div class="footer-links">
+    <a href="#journal" class="footer-link">Journal</a>
+    <a href="#series" class="footer-link">Series</a>
+    <a href="#about" class="footer-link">About</a>
+    <a href="mailto:americanized@gmail.com" class="footer-link">Contact</a>
+  </div>
+  <div class="footer-copy">© 2026 Ryan Carlson</div>
+</footer>
+
+<!-- ════════════════════════════════════════════════════════════
+     ARTICLE MODAL
+═══════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal" role="dialog" aria-modal="true">
+  <button class="modal-close" onclick="closeModal()">Close ✕</button>
+  <div class="modal-inner">
+    <div class="modal-image-pane">
+      <img id="modal-img" src="" alt="" class="bw">
+    </div>
+    <div class="modal-story-pane">
+      <div class="modal-tag" id="modal-tag"></div>
+      <div class="modal-title" id="modal-title"></div>
+      <div class="modal-meta">
+        <div class="modal-meta-row"><span class="lbl">Text:</span><span class="val">Ryan Carlson</span></div>
+        <div class="modal-meta-row"><span class="lbl">Date:</span><span class="val" id="modal-date"></span></div>
+        <div class="modal-meta-row"><span class="lbl">Read:</span><span class="val" id="modal-read"></span></div>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── CATEGORY FILTER ─────────────────────────────────────────── */
+document.querySelectorAll('.cat-pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter = btn.dataset.filter;
+    document.querySelectorAll('.card').forEach(card => {
+      if (filter === 'all' || card.dataset.cat === filter) {
+        card.classList.remove('hidden');
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+  });
+});
+
+/* ── ARTICLE DATA ─────────────────────────────────────────────── */
+const articles = {
+  midnight: {
+    img: 'Photos I took/DSCF4422 1.jpg',
+    bw: true,
+    tag: 'Van Life',
+    title: 'Somewhere After Midnight',
+    date: '30. March 2026',
+    read: '4 min',
+    body: `
+      <p class="lead">We had been driving since noon. No destination in particular — just east-ish, following a road we hadn't tried before.</p>
+      <p>When the headlights picked up the entrance to a dirt track, I pulled off on instinct. We went about a quarter mile in and stopped. I killed the engine. That's when the quiet started.</p>
+      <p>Not silence — quiet. The kind that presses in from all sides, that makes your ears work harder. Stars that you forget exist when you live near a city. The dog stirred once, checked that we were still there, and went back to sleep.</p>
+      <p>I set up outside with the camera on a tripod and just waited. The van glowed faintly from the LED strips inside. It looked like a lantern in the middle of nothing. I took maybe forty frames. This is the one.</p>
+    `
+  },
+  'sedona-couple': {
+    img: 'Photos I took/DSCF4700.jpg',
+    bw: false,
+    tag: 'Landscapes',
+    title: 'Red Rock Evening',
+    date: '28. March 2026',
+    read: '3 min',
+    body: `
+      <p class="lead">We drove into Sedona from the north and immediately understood why people talk about it the way they do.</p>
+      <p>The rock formations come on gradually and then all at once — you round a bend and suddenly everything is a color that doesn't look like it belongs in nature. That orange-red against a clear blue sky. It stops you.</p>
+      <p>We found a fence post at the edge of a trailhead parking lot as the light was going golden. Neither of us spoke much. That's one of the better things about being with someone you've known a long time — you don't have to narrate the good moments.</p>
+      <p>I got maybe ten frames. This one she likes best. I kept it in color, which I almost never do.</p>
+    `
+  },
+  'morning-watch': {
+    img: 'Photos I took/DSCF4402 1.jpg',
+    bw: true,
+    tag: 'The Dog',
+    title: 'The Morning Watch',
+    date: '27. March 2026',
+    read: '2 min',
+    body: `
+      <p class="lead">Every single morning, without exception, she gets up before us and goes to the window.</p>
+      <p>Whatever is outside — a bird, a stranger walking past, a truck backing up, nothing at all — it demands her complete attention. She watches with the focus of someone who believes something important is about to happen.</p>
+      <p>Maybe she's right. I photograph her from the bed, still half asleep. The light is usually good at that hour — soft and gray and forgiving. The best kind.</p>
+    `
+  },
+  'home-van': {
+    img: 'Photos I took/DSCF4532 1.jpg',
+    bw: true,
+    tag: 'Van Life',
+    title: 'Home Is Where You Park It',
+    date: '26. March 2026',
+    read: '4 min',
+    body: `
+      <p class="lead">This was somewhere in New Mexico, late in a trip we'd extended twice already.</p>
+      <p>The campfire was out. We were just standing in the doorway of the van looking at whatever was outside the frame — I don't remember what, some combination of scrub brush and desert sky. The hour was late. The kind of late where you stop caring about being tired.</p>
+      <p>Standing in a van doorway is a specific posture. Your weight shifts differently when the floor is higher than you expect. You lean against the frame. You look out. You are neither fully inside nor fully outside — which is sort of what the whole life feels like, honestly.</p>
+      <p>I handed her the camera and she handed it back. This is what she got.</p>
+    `
+  },
+  close: {
+    img: 'Photos I took/DSCF4604 1.jpg',
+    bw: true,
+    tag: 'Portraits',
+    title: 'Close',
+    date: '25. March 2026',
+    read: '2 min',
+    body: `
+      <p class="lead">There are photographs I plan and photographs that just happen. This is one that happened.</p>
+      <p>The room was dark. One window was doing most of the work — that kind of late afternoon light that goes sideways through glass and turns everything gray and soft. She leaned in without being asked. I pressed the shutter without thinking about it.</p>
+      <p>The best portrait I've taken might be this one. I didn't earn it. It just arrived, the way the best ones do.</p>
+    `
+  },
+  'small-things': {
+    img: 'Photos I took/DSCF4456 1.jpg',
+    bw: true,
+    tag: 'The Dog',
+    title: 'Small Things',
+    date: '24. March 2026',
+    read: '2 min',
+    body: `
+      <p class="lead">She weighs about ten pounds. On a leash in a park she moves with the confidence of something five times her size.</p>
+      <p>Nose down, tail up, investigating every square inch like she's filing a report. We stop whenever she stops, which is constantly. It adds about forty minutes to any walk. Neither of us minds anymore.</p>
+      <p>She reminds me to look at things close-up. To not be in a hurry to get to the next thing. That's a genuinely good quality in a traveling companion and I try to take notes.</p>
+    `
+  },
+  'sedona-rock': {
+    img: 'Photos I took/DSCF4710.jpg',
+    bw: false,
+    tag: 'Landscapes',
+    title: 'Sedona, First Light',
+    date: '23. March 2026',
+    read: '3 min',
+    body: `
+      <p class="lead">The red rock formations in Sedona do something extraordinary at the edges of the day.</p>
+      <p>At sunrise and sunset the color deepens and saturates in a way that seems impossible — like the rock is generating its own light, not just reflecting it. You understand why Indigenous people treated this land as sacred. It has a presence.</p>
+      <p>I pulled over at a trailhead sign and pointed the camera at the rock. No foreground interest, no compositional gymnastics. Just the thing itself, doing what it does in the last good light of the afternoon.</p>
+      <p>Sometimes that's enough. Sometimes that's everything.</p>
+    `
+  },
+  'three-in-a-bed': {
+    img: 'Photos I took/DSCF4411 1.jpg',
+    bw: true,
+    tag: 'The Dog',
+    title: 'Three in a Bed',
+    date: '22. March 2026',
+    read: '2 min',
+    body: `
+      <p class="lead">The van platform bed is queen-sized if you build it right. We built it right.</p>
+      <p>Still, somehow, eleven pounds of Pomeranian takes up approximately one third of the mattress. She sleeps sideways, with absolute conviction about the space she deserves. The conviction of someone who has never been told no and doesn't expect to start hearing it now.</p>
+      <p>Neither of us move her. You learn what's actually worth fighting about on a long trip. This is not it. She gets the middle.</p>
+    `
+  },
+  'self-assigned': {
+    img: 'Photos I took/DSCF4725.jpg',
+    bw: true,
+    tag: 'Portraits',
+    title: 'Self-Assigned',
+    date: '20. March 2026',
+    read: '2 min',
+    body: `
+      <p class="lead">Somewhere outside Sedona, early evening. I handed her the camera and stood where she pointed.</p>
+      <p>I don't like being photographed. I spend enough time on the looking side of the lens that the other side feels strange — overexposed in a way that has nothing to do with camera settings. Something about being seen on purpose instead of accidentally.</p>
+      <p>But she waits until you stop performing. She waited. The red rocks are somewhere behind me in the frame, indifferent and enormous and correct. It is a good photograph. I didn't take it.</p>
+    `
+  },
+  transit: {
+    img: 'Photos I took/DSCF4477 1.jpg',
+    bw: true,
+    tag: 'Van Life',
+    title: 'Transit',
+    date: '18. March 2026',
+    read: '3 min',
+    body: `
+      <p class="lead">Between destinations, the van sits in parking lots. Unremarkable to everyone passing by. Everything to us.</p>
+      <p>Big box stores. Truck stops. Casino overflow lots. Walmart, always Walmart. The van-life community has an entire taxonomy of parking situations and we've slept in most of them by now. You get good at reading a lot fast — whether it's safe, whether there's foot traffic at 2am, whether the security guard is going to knock.</p>
+      <p>From the outside, the van looks like a contractor's vehicle or a delivery truck. Nobody looks twice. That anonymity is part of the point. We could be anyone. We could be anywhere. We usually are.</p>
+    `
+  }
+};
+
+/* ── MODAL OPEN / CLOSE ───────────────────────────────────────── */
+function openModal(id) {
+  const a = articles[id];
+  if (!a) return;
+  const img = document.getElementById('modal-img');
+  img.src = a.img;
+  img.alt = a.title;
+  img.className = a.bw ? 'bw' : '';
+  document.getElementById('modal-tag').textContent = a.tag;
+  document.getElementById('modal-title').textContent = a.title;
+  document.getElementById('modal-date').textContent = a.date;
+  document.getElementById('modal-read').textContent = a.read;
+  document.getElementById('modal-body').innerHTML = a.body;
+  const overlay = document.getElementById('modal');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* Close on overlay click (outside modal-inner) */
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+/* Close on Escape */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+</script>
+
+</body>
+</html>
