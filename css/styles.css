@@ -278,11 +278,13 @@ img {
   filter: grayscale(1);
 }
 
-.card:hover .card-image img {
+.card:hover .card-image img,
+.card:hover .card-image picture img {
   transform: scale(1.03);
 }
 
-.card:hover .card-image.bw img {
+.card:hover .card-image.bw img,
+.card:hover .card-image.bw picture img {
   filter: grayscale(0);
 }
 
@@ -1042,10 +1044,21 @@ img {
   top: 0;
   left: 0;
   height: 2px;
-  width: 0%;
+  width: 100%;
   background: var(--black);
   z-index: 200;
-  transition: width 0.3s ease;
+  transform: scaleX(0);
+  transform-origin: left;
+  will-change: transform;
+}
+
+/* ── Content-visibility for below-fold sections ── */
+
+.membership-band,
+.split-callouts,
+.newsletter-band {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
 }
 
 /* ── Membership band ── */
@@ -1274,23 +1287,19 @@ img {
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
-  transition: width 0.2s ease, height 0.2s ease, margin 0.2s ease, opacity 0.2s;
+  transition: transform 0.2s ease, opacity 0.2s;
   margin-left: -10px;
   margin-top: -10px;
   mix-blend-mode: difference;
   opacity: 0;
+  will-change: transform;
 }
 
 .custom-cursor.active {
   opacity: 1;
 }
 
-.custom-cursor--hover {
-  width: 48px;
-  height: 48px;
-  margin-left: -24px;
-  margin-top: -24px;
-}
+/* Hover scale is now applied via JS transform concatenation (scale 2.4) */
 
 /* ── Scroll snap ── */
 

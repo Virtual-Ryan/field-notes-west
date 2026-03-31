@@ -1,43 +1,49 @@
 /* ──────────────────────────────────────────────
    Field Notes West — main.js
    All interactive features in one file.
+   Optimized: rAF-throttled handlers, merged mousemove,
+   fixed filter race conditions, fixed throw velocity.
    ────────────────────────────────────────────── */
 
 (function () {
   "use strict";
 
-  const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+  var isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
 
-  /* ── 1. Progress bar ── */
+  /* ── Shared mouse state (single mousemove handler) ── */
 
-  const progressBar = document.querySelector(".progress-bar");
+  var mouseX = window.innerWidth / 2;
+  var mouseY = window.innerHeight / 2;
+  var cursorRAF = false;
+
+  /* ── 1. Progress bar (rAF-throttled) ── */
+
+  var progressBar = document.querySelector(".progress-bar");
+  var scrollTicking = false;
 
   window.addEventListener("scroll", function () {
     if (!progressBar) return;
-    const pct =
-      (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
-    progressBar.style.width = pct + "%";
+    if (!scrollTicking) {
+      requestAnimationFrame(function () {
+        var pct =
+          (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+        progressBar.style.transform = "scaleX(" + (pct / 100) + ")";
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
   });
 
-  /* ── 3. Card reveal animations ── */
+  /* ── 2. Card reveal (IntersectionObserver) ── */
 
-  function revealCards() {
-    const cards = document.querySelectorAll(".card:not(.visible):not(.hidden)");
-    cards.forEach(function (card, i) {
-      card.style.transitionDelay = i * 80 + "ms";
-      card.classList.add("visible");
-    });
-  }
-
-  // IntersectionObserver for scroll-triggered reveals
   if ("IntersectionObserver" in window) {
-    const observer = new IntersectionObserver(
+    var observer = new IntersectionObserver(
       function (entries) {
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
-            const card = entry.target;
-            const cards = Array.from(document.querySelectorAll(".card"));
-            const idx = cards.indexOf(card);
+            var card = entry.target;
+            var allCards = Array.from(document.querySelectorAll(".card"));
+            var idx = allCards.indexOf(card);
             card.style.transitionDelay = (idx % 3) * 80 + "ms";
             card.classList.add("visible");
             observer.unobserve(card);
@@ -52,31 +58,38 @@
     });
   }
 
-  /* ── 4. Filter animations ── */
+  /* ── 3. Filter animations (with race condition fix) ── */
+
+  var filterTimeoutA = null;
+  var filterTimeoutB = null;
 
   document.querySelectorAll("[data-filter]").forEach(function (button) {
     button.addEventListener("click", function () {
+      // Cancel any pending filter transitions
+      if (filterTimeoutA) { clearTimeout(filterTimeoutA); filterTimeoutA = null; }
+      if (filterTimeoutB) { clearTimeout(filterTimeoutB); filterTimeoutB = null; }
+
       document
         .querySelectorAll("[data-filter]")
         .forEach(function (item) { item.classList.remove("active"); });
       button.classList.add("active");
 
-      const filter = button.dataset.filter;
-      const cards = document.querySelectorAll(".card");
+      var filter = button.dataset.filter;
+      var cards = document.querySelectorAll(".card");
 
       // Phase 1: fade out cards that don't match
       cards.forEach(function (card) {
-        const matches = filter === "all" || card.dataset.cat === filter;
+        var matches = filter === "all" || card.dataset.cat === filter;
         if (!matches && !card.classList.contains("hidden")) {
           card.classList.add("filtering-out");
         }
       });
 
       // Phase 2: after fade out, hide them and show matching
-      setTimeout(function () {
-        let enterIndex = 0;
+      filterTimeoutA = setTimeout(function () {
+        var enterIndex = 0;
         cards.forEach(function (card) {
-          const matches = filter === "all" || card.dataset.cat === filter;
+          var matches = filter === "all" || card.dataset.cat === filter;
           if (!matches) {
             card.classList.add("hidden");
             card.classList.remove("filtering-out", "visible");
@@ -88,7 +101,7 @@
           }
         });
 
-        setTimeout(function () {
+        filterTimeoutB = setTimeout(function () {
           cards.forEach(function (card) {
             card.classList.remove("filtering-in");
           });
@@ -97,33 +110,49 @@
     });
   });
 
-  /* ── 5. Physics photo gallery ── */
+  /* ── 4. Physics photo gallery ── */
 
-  const scatterToggle = document.getElementById("scatter-toggle");
-  let scatterActive = false;
-  let physicsCards = [];
-  let physicsRAF = null;
-  let mouseX = window.innerWidth / 2;
-  let mouseY = window.innerHeight / 2;
-  let dragCard = null;
-  let dragOffsetX = 0;
-  let dragOffsetY = 0;
-  let lastMouseX = 0;
-  let lastMouseY = 0;
+  var scatterToggle = document.getElementById("scatter-toggle");
+  var scatterActive = false;
+  var physicsCards = [];
+  var physicsRAF = null;
+  var dragCard = null;
+  var dragOffsetX = 0;
+  var dragOffsetY = 0;
+
+  // Velocity history for accurate throw (tracks last 3 positions)
+  var mouseHistory = [];
+  var HISTORY_SIZE = 4;
+
+  function recordMousePosition(x, y) {
+    mouseHistory.push({ x: x, y: y, t: performance.now() });
+    if (mouseHistory.length > HISTORY_SIZE) mouseHistory.shift();
+  }
+
+  function getThrowVelocity() {
+    if (mouseHistory.length < 2) return { vx: 0, vy: 0 };
+    var oldest = mouseHistory[0];
+    var newest = mouseHistory[mouseHistory.length - 1];
+    var dt = (newest.t - oldest.t) || 1;
+    // Scale to roughly per-frame velocity (16ms)
+    return {
+      vx: ((newest.x - oldest.x) / dt) * 16 * 0.5,
+      vy: ((newest.y - oldest.y) / dt) * 16 * 0.5,
+    };
+  }
 
   if (scatterToggle && !isTouchDevice) {
     scatterToggle.addEventListener("click", function () {
       scatterActive = !scatterActive;
       scatterToggle.classList.toggle("active", scatterActive);
 
-      const grid = document.querySelector(".grid");
-      const cards = document.querySelectorAll(".card");
+      var grid = document.querySelector(".grid");
+      var cards = document.querySelectorAll(".card");
 
       if (scatterActive) {
-        // Capture current positions
         physicsCards = [];
         cards.forEach(function (card) {
-          const rect = card.getBoundingClientRect();
+          var rect = card.getBoundingClientRect();
           physicsCards.push({
             el: card,
             x: rect.left,
@@ -160,43 +189,31 @@
       }
     });
 
-    document.addEventListener("mousemove", function (e) {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      lastMouseX = e.clientX;
-      lastMouseY = e.clientY;
-
-      if (dragCard) {
-        dragCard.x = e.clientX - dragOffsetX;
-        dragCard.y = e.clientY - dragOffsetY;
-        dragCard.vx = 0;
-        dragCard.vy = 0;
-      }
-    });
-
     document.addEventListener("mousedown", function (e) {
       if (!scatterActive) return;
-      const card = e.target.closest(".card.scattered");
+      var card = e.target.closest(".card.scattered");
       if (!card) return;
 
       e.preventDefault();
-      const pc = physicsCards.find(function (p) { return p.el === card; });
+      var pc = physicsCards.find(function (p) { return p.el === card; });
       if (!pc) return;
 
       dragCard = pc;
       dragOffsetX = e.clientX - pc.x;
       dragOffsetY = e.clientY - pc.y;
       card.classList.add("dragging");
-      lastMouseX = e.clientX;
-      lastMouseY = e.clientY;
+      mouseHistory = [];
+      recordMousePosition(e.clientX, e.clientY);
     });
 
     document.addEventListener("mouseup", function (e) {
       if (dragCard) {
-        dragCard.vx = (e.clientX - lastMouseX) * 0.5;
-        dragCard.vy = (e.clientY - lastMouseY) * 0.5;
+        var vel = getThrowVelocity();
+        dragCard.vx = vel.vx;
+        dragCard.vy = vel.vy;
         dragCard.el.classList.remove("dragging");
         dragCard = null;
+        mouseHistory = [];
       }
     });
   } else if (scatterToggle && isTouchDevice) {
@@ -205,8 +222,8 @@
 
   function startPhysics() {
     function tick() {
-      const W = window.innerWidth;
-      const H = window.innerHeight;
+      var W = window.innerWidth;
+      var H = window.innerHeight;
 
       physicsCards.forEach(function (pc) {
         if (pc === dragCard) {
@@ -219,13 +236,13 @@
         pc.vy += 0.3;
 
         // Mouse repulsion
-        const cx = pc.x + pc.w / 2;
-        const cy = pc.y + pc.h / 2;
-        const dx = cx - mouseX;
-        const dy = cy - mouseY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+        var cx = pc.x + pc.w / 2;
+        var cy = pc.y + pc.h / 2;
+        var dx = cx - mouseX;
+        var dy = cy - mouseY;
+        var dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < 200 && dist > 0) {
-          const force = (200 - dist) / 200 * 2;
+          var force = (200 - dist) / 200 * 2;
           pc.vx += (dx / dist) * force;
           pc.vy += (dy / dist) * force;
         }
@@ -248,7 +265,6 @@
           pc.y = H - pc.h;
           pc.vy *= -0.6;
           pc.rotV += pc.vx * 0.01;
-          // Floor friction
           pc.vx *= 0.95;
         }
 
@@ -271,20 +287,9 @@
     physicsCards = [];
   }
 
-  /* ── 6. GLightbox ── */
+  /* ── 5. Dark mode ── */
 
-  if (typeof GLightbox !== "undefined") {
-    GLightbox({
-      selector: "[data-gallery]",
-      touchNavigation: true,
-      loop: true,
-      closeOnOutsideClick: true,
-    });
-  }
-
-  /* ── 7. Dark mode ── */
-
-  const darkToggle = document.getElementById("dark-toggle");
+  var darkToggle = document.getElementById("dark-toggle");
 
   function setTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
@@ -295,8 +300,7 @@
   }
 
   if (darkToggle) {
-    // Check saved preference or OS preference
-    const saved = localStorage.getItem("fnw-theme");
+    var saved = localStorage.getItem("fnw-theme");
     if (saved) {
       setTheme(saved);
     } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
@@ -304,40 +308,70 @@
     }
 
     darkToggle.addEventListener("click", function () {
-      const current = document.documentElement.getAttribute("data-theme");
+      var current = document.documentElement.getAttribute("data-theme");
       setTheme(current === "dark" ? "light" : "dark");
     });
   }
 
-  /* ── 8. Variable font hero — removed ── */
+  /* ── 7. Custom cursor (unified mousemove, rAF-throttled) ── */
 
-  /* ── 9. Custom cursor ── */
+  var cursor = document.querySelector(".custom-cursor");
+  var cursorX = 0;
+  var cursorY = 0;
+  var cursorVisible = false;
 
-  const cursor = document.querySelector(".custom-cursor");
+  // Single global mousemove handler — updates cursor, physics drag, and mouse position
+  document.addEventListener("mousemove", function (e) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursorX = e.clientX;
+    cursorY = e.clientY;
+
+    // Track position history for physics throw
+    if (dragCard) {
+      recordMousePosition(e.clientX, e.clientY);
+      dragCard.x = e.clientX - dragOffsetX;
+      dragCard.y = e.clientY - dragOffsetY;
+      dragCard.vx = 0;
+      dragCard.vy = 0;
+    }
+
+    // rAF-throttled cursor update
+    if (cursor && !isTouchDevice && !cursorRAF) {
+      cursorRAF = true;
+      requestAnimationFrame(function () {
+        cursor.style.transform =
+          "translate3d(" + cursorX + "px, " + cursorY + "px, 0)" +
+          (cursor.classList.contains("custom-cursor--hover") ? " scale(2.4)" : "");
+        if (!cursorVisible) {
+          cursor.classList.add("active");
+          cursorVisible = true;
+        }
+        cursorRAF = false;
+      });
+    }
+  });
 
   if (cursor && !isTouchDevice) {
-    document.addEventListener("mousemove", function (e) {
-      cursor.style.transform =
-        "translate3d(" + e.clientX + "px, " + e.clientY + "px, 0)";
-      if (!cursor.classList.contains("active")) {
-        cursor.classList.add("active");
-      }
-    });
-
     document.addEventListener("mouseleave", function () {
       cursor.classList.remove("active");
+      cursorVisible = false;
     });
 
-    // Hover effect on images and cards
-    document.querySelectorAll(
-      ".card-image, .feature-image, .product-card img, .article-image, .profile-portrait"
-    ).forEach(function (el) {
-      el.addEventListener("mouseenter", function () {
-        cursor.classList.add("custom-cursor--hover");
-      });
-      el.addEventListener("mouseleave", function () {
-        cursor.classList.remove("custom-cursor--hover");
-      });
-    });
+    // Hover effect via event delegation on the page container
+    var page = document.querySelector(".page");
+    if (page) {
+      page.addEventListener("mouseenter", function (e) {
+        if (e.target.closest(".card-image, .feature-image, .product-card img, .article-image, .profile-portrait, picture")) {
+          cursor.classList.add("custom-cursor--hover");
+        }
+      }, true);
+
+      page.addEventListener("mouseleave", function (e) {
+        if (e.target.closest(".card-image, .feature-image, .product-card img, .article-image, .profile-portrait, picture")) {
+          cursor.classList.remove("custom-cursor--hover");
+        }
+      }, true);
+    }
   }
 })();

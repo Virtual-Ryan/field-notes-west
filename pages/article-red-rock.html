@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/styles.css">
+  <link rel="preload" as="image" type="image/avif" href="../assets/optimized/DSCF4700-1600w.avif">
 </head>
 <body>
   <div class="page">
@@ -18,9 +19,17 @@
         <div><h1 class="article-title">Red rock evening</h1></div>
         <div class="article-deck"><p>Light in Sedona has a way of flattening time and making every late-afternoon decision feel pre-edited. This piece is about waiting for that effect without letting the location do all the thinking for you.</p><div class="article-meta"><span><strong>Text</strong> Ryan Carlson</span><span><strong>Date</strong> March 28, 2026</span><span><strong>Read</strong> 5 Min</span></div></div>
       </div>
-      <img class="article-image" src="../assets/images/DSCF4700.jpg" alt="">
+      <picture>
+              <source type="image/avif" srcset="../assets/optimized/DSCF4700-400w.avif 400w, ../assets/optimized/DSCF4700-800w.avif 800w, ../assets/optimized/DSCF4700-1200w.avif 1200w, ../assets/optimized/DSCF4700-1600w.avif 1600w" sizes="(max-width: 1440px) 100vw, 1440px">
+              <source type="image/webp" srcset="../assets/optimized/DSCF4700-400w.webp 400w, ../assets/optimized/DSCF4700-800w.webp 800w, ../assets/optimized/DSCF4700-1200w.webp 1200w, ../assets/optimized/DSCF4700-1600w.webp 1600w" sizes="(max-width: 1440px) 100vw, 1440px">
+              <img src="../assets/optimized/DSCF4700-1600w.jpg" alt="" width="1600" height="1067" fetchpriority="high" class="article-image">
+            </picture>
       <div class="article-bottom">
-        <aside class="author-rail"><div class="author-box"><img src="../assets/images/author.jpg" alt=""><div><strong>Ryan<br>Carlson</strong></div></div><div class="mini-meta"><div><strong>Date</strong> March 28, 2026</div><div><strong>Read</strong> 5 Min</div><div><strong>Share</strong> IG / TW / YT</div></div></aside>
+        <aside class="author-rail"><div class="author-box"><picture>
+              <source type="image/avif" srcset="../assets/optimized/author-120w.avif 120w, ../assets/optimized/author-240w.avif 240w" sizes="58px">
+              <source type="image/webp" srcset="../assets/optimized/author-120w.webp 120w, ../assets/optimized/author-240w.webp 240w" sizes="58px">
+              <img src="../assets/optimized/author-240w.jpg" alt="" width="240" height="240" loading="lazy">
+            </picture><div><strong>Ryan<br>Carlson</strong></div></div><div class="mini-meta"><div><strong>Date</strong> March 28, 2026</div><div><strong>Read</strong> 5 Min</div><div><strong>Share</strong> IG / TW / YT</div></div></aside>
         <div class="rich-text">
           <p class="lead">Sedona is one of those places that looks overdirected in photographs until you get there and realize the place really does insist on that level of composition.</p>
           <p>The problem is that a location that strong can turn a photographer lazy very quickly. Everything already looks finished. Every turn in the road offers the possibility of another competent frame. Competent is a dangerous category when you are trying not to make souvenirs for people who were never there.</p>

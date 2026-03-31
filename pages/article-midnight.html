@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/styles.css">
+  <link rel="preload" as="image" type="image/avif" href="../assets/optimized/DSCF4422-1-1600w.avif">
 </head>
 <body>
   <div class="page">
@@ -28,11 +29,19 @@
           </div>
         </div>
       </div>
-      <img class="article-image" src="../assets/images/DSCF4422 1.jpg" alt="Van parked on a dirt road under a star-filled sky">
+      <picture>
+              <source type="image/avif" srcset="../assets/optimized/DSCF4422-1-400w.avif 400w, ../assets/optimized/DSCF4422-1-800w.avif 800w, ../assets/optimized/DSCF4422-1-1200w.avif 1200w, ../assets/optimized/DSCF4422-1-1600w.avif 1600w" sizes="(max-width: 1440px) 100vw, 1440px">
+              <source type="image/webp" srcset="../assets/optimized/DSCF4422-1-400w.webp 400w, ../assets/optimized/DSCF4422-1-800w.webp 800w, ../assets/optimized/DSCF4422-1-1200w.webp 1200w, ../assets/optimized/DSCF4422-1-1600w.webp 1600w" sizes="(max-width: 1440px) 100vw, 1440px">
+              <img src="../assets/optimized/DSCF4422-1-1600w.jpg" alt="Van parked on a dirt road under a star-filled sky" width="1600" height="1067" fetchpriority="high" class="article-image">
+            </picture>
       <div class="article-bottom">
         <aside class="author-rail">
           <div class="author-box">
-            <img src="../assets/images/author.jpg" alt="Ryan Carlson">
+            <picture>
+              <source type="image/avif" srcset="../assets/optimized/author-120w.avif 120w, ../assets/optimized/author-240w.avif 240w" sizes="58px">
+              <source type="image/webp" srcset="../assets/optimized/author-120w.webp 120w, ../assets/optimized/author-240w.webp 240w" sizes="58px">
+              <img src="../assets/optimized/author-240w.jpg" alt="Ryan Carlson" width="240" height="240" loading="lazy">
+            </picture>
             <div><strong>Ryan<br>Carlson</strong></div>
           </div>
           <div class="mini-meta">
